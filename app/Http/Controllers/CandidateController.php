@@ -18,13 +18,8 @@ class CandidateController extends Controller
      */
     public function index()
     {
-        //
-        $candidate = Candidate::orderBy('id','DESC')->get();
-        $response =[
-            'message' => 'List Candidate based on ID (DESC)',
-            'data' => $candidate
-        ];
-        return response()->json($response, Response::HTTP_OK);
+        $candidate = Candidate::all(); 
+        return view('DataPelamar', ['candidate' => $candidate], compact('candidate'));
     }
 
     /**
@@ -34,7 +29,7 @@ class CandidateController extends Controller
      */
     public function create()
     {
-        //
+        return view('InputPelamar');
     }
 
     /**
@@ -45,101 +40,17 @@ class CandidateController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $validator = Validator::make($request->all(), [
-            'nama_kandidat' => ['required'],
-            // 'nik' => ['required'],
-            'nomor_telp' => ['required'],
-            'alamat' => ['required'],
-            'experience' => ['required'],
-            'education' => ['required'],
-            // 'divisi' => ['required', 'in:HR,Finnance,Marketing,Operasional'],
-            // 'jeniscuti' => ['required', 'in:Tahunan,Hamil,Haid,Sakit,Penting'],
-            'status' =>['required', 'in:Lolos,Ditolak'],
-            // 'tanggalcuti' =>['required'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        try {
-            $candidate = Candidate::create($request->all());
-            $response = [
-                'message' => 'Data kandidat berhasil disimpan!',
-                'data' => $candidate
-            ];
-            return response()->json($response, Response::HTTP_CREATED);
-        } catch (QueryException $e) {
-            return response()->json([
-                'message' => 'Data Gagal di Simpan ' . $e->errorinfo
-            ]);
-        }
-    }
+    
+        $candidate = new Candidate;
+        $candidate->nama_kandidat= $request->nama_kandidat;
+        $candidate->nomor_telp = $request->nomor_telp;
+        $candidate->alamat = $request->alamat;
+        $candidate->experience = $request->experience;
+        $candidate->education = $request->education;
+        $candidate->status = $request->status;
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-        $candidate = Candidate::findorFail($id);
-        $response = [
-            'message' => 'Show Candidates by ID',
-            'data' => $candidate
-        ];
-        return response()->json($response,Response::HTTP_OK);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-        $candidate = Candidate::findorFail($id);
-        $validator = Validator::make($request->all(), [
-            'nama_kandidat' => ['required'],
-            'nomor_telp' => ['required'],
-            'alamat' => ['required'],
-            'experience' => ['required'],
-            'education' => ['required'],
-            // 'divisi' => ['required', 'in:HR,Finnance,Marketing,Operasional'],
-            // 'jeniscuti' => ['required', 'in:Tahunan,Hamil,Haid,Sakit,Penting'],
-            'status' =>['required', 'in:Lolos,Ditolak'],
-            // 'tanggalcuti' =>['required'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        try {
-            $candidate->update($request->all());
-            $response = [
-                'message' => 'Data pengajuan cuti berhasil diupdate!',
-                'data' => $candidate
-            ];
-            return response()->json($response, Response::HTTP_CREATED);
-        } catch (QueryException $e) {
-            return response()->json([
-                'message' => 'Data Gagal di Perbarui' . $e->errorinfo
-            ]);
-        }
+        $candidate->save();
+        return redirect('ReadPelamar');
     }
 
     /**

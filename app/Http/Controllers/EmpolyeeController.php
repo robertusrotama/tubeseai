@@ -17,13 +17,8 @@ class EmpolyeeController extends Controller
      */
     public function index()
     {
-        //
-        $employee = Employee::orderBy('id','DESC')->get();
-        $response =[
-            'message' => 'List Employees based on ID (DESC)',
-            'data' => $employee
-        ];
-        return response()->json($response, Response::HTTP_OK);
+        $employee = Employee::all(); 
+        return view('DataPegawai', ['employee' => $employee], compact('employee'));
     }
 
     /**
@@ -33,7 +28,7 @@ class EmpolyeeController extends Controller
      */
     public function create()
     {
-        //
+        return view('InputPegawai');
     }
 
     /**
@@ -44,37 +39,18 @@ class EmpolyeeController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $validator = Validator::make($request->all(), [
-            'nama_karyawan' => ['required'],
-            // 'nik' => ['required'],
-            'nik' => ['required'],
-            'jenis_kelamin' => ['required' , 'in:Laki-Laki, Perempua'],
-            'divisi' => ['required'],
-            'alamat' => ['required'],
-            'nomor_telp' => ['required'],
-            // 'divisi' => ['required', 'in:HR,Finnance,Marketing,Operasional'],
-            // 'jeniscuti' => ['required', 'in:Tahunan,Hamil,Haid,Sakit,Penting'],
-            'status' =>['required', 'in:Aktif, TidakAktif'],
-            'tanggal_masuk' =>['required'],
-            // 'tanggalcuti' =>['required'],
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        try {
-            $employee = Employee::create($request->all());
-            $response = [
-                'message' => 'Data karyawan berhasil disimpan!',
-                'data' => $employee
-            ];
-            return response()->json($response, Response::HTTP_CREATED);
-        } catch (QueryException $e) {
-            return response()->json([
-                'message' => 'Data Gagal di Simpan ' . $e->errorinfo
-            ]);
-        }
-        
+        $employee = new Employee;
+        $employee->nama_karyawan= $request->nama_karyawan;
+        $employee->nik = $request->nik;
+        $employee->jenis_kelamin = $request->jenis_kelamin;
+        $employee->divisi = $request->divisi;
+        $employee->alamat = $request->alamat;
+        $employee->nomor_telp = $request->nomor_telp;
+        $employee->status = $request->status;
+        $employee->tanggal_masuk = $request->tanggal_masuk;
+
+        $employee->save();
+        return redirect('DataPegawai');
     }
 
     /**
